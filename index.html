@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RiskLab</title>
+  <link rel="icon" type="image/png" href="./assets/favicon.png">
+  <link rel="stylesheet" href="./css/main.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script src="./js/login-demo.js" defer></script>\n  <script src="./js/app.js" defer></script>
+</head>
+<body class="login-locked">
+  <div id="login-overlay" class="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="./assets/favicon.png" alt="" class="login-favicon">
+        <div>
+          <div class="login-brand-name">RiskLab</div>
+          <div class="login-brand-caption">RISK MONITOR · ACCESO RESTRINGIDO</div>
+        </div>
+      </div>
+
+      <div class="login-divider"></div>
+
+      <div class="login-intro">
+        <div class="login-lock" aria-hidden="true">⌑</div>
+        <h1 id="login-title">Iniciar sesión</h1>
+        <p>Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <form id="login-form" class="login-form" novalidate>
+        <label for="login-username">Usuario</label>
+        <input id="login-username" name="username" type="text" autocomplete="username"
+          placeholder="Tu usuario" required autofocus>
+        <label for="login-password">Contraseña</label>
+        <div class="login-password-wrap">
+          <input id="login-password" name="password" type="password" autocomplete="current-password"
+            placeholder="Tu contraseña" required>
+          <button id="login-password-toggle" class="login-password-toggle" type="button"
+            aria-label="Mostrar contraseña">Ver</button>
+        </div>
+        <p id="login-error" class="login-error" role="alert" hidden>Usuario o contraseña incorrectos.</p>
+        <button class="login-submit" type="submit">
+          <span>Acceder a RiskLab</span><span aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <div class="login-foot">
+        <span class="login-status-dot"></span>
+        <span>Entorno de demostración</span>
+      </div>
+    </div>
+    <p class="login-disclaimer">Prototipo de acceso · No protege los datos del servidor</p>
+  </div>
+
+  <div class="app-shell" id="risklab-app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><img src="./assets/favicon.png" alt="RiskLab"></div>
+        <div>
+          <div class="brand-name">RiskLab</div>
+          <div class="brand-sub">RIESGOS FINANCIEROS</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Navegación principal">
+        <div class="nav-group-title">Monitor</div>
+        <button class="nav-item active" data-view="visor"><span>01</span> Visor</button>
+        <button class="nav-item" data-view="historico"><span>02</span> Histórico</button>
+        <button class="nav-item" data-view="portafolios"><span>03</span> Portafolios</button>
+        <button class="nav-item" data-view="mandatarios"><span>04</span> Mandatarios</button>
+
+
+        
+        <div class="nav-group-title">Laboratorio</div>
+        <button class="nav-item" data-view="portafolios"><span>05</span> Composición</button>
+        <button class="nav-item" data-view="portafolios"><span>06</span> Limpieza</button>
+        <button class="nav-item" data-view="riesgo"><span>07</span> Bases de datos</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="status-dot"></span>
+        <span>API RiskLab 1.0.0</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">INSTITUTO DE SEGURIDAD SOCIAL DEL ESTADO DE GUANAJUATO</div>
+          <h1 id="view-title">Visor</h1>
+        </div>
+        <div class="topbar-right">
+          <div class="data-status" id="api-status">Conectando…</div>
+          <div class="date-chip" id="current-date">—</div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div id="view-visor" class="view">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">VISOR</div>
+              <h2>Situación de riesgo</h2>
+              <p>Metodología de cálculo: Paramétrico-Dinámico al 99% de confianza.</p>
+            </div>
+            <div class="source-badge">Composición de Cartera: Dirección de Inversiones</div>
+          </div>
+
+          <div class="kpi-grid">
+            <article class="kpi-card">
+              <span>Valor de mercado</span>
+              <strong id="kpi-vm">—</strong>
+              <small>mdp</small>
+            </article>
+            <article class="kpi-card">
+              <span>Monto invertido</span>
+              <strong id="kpi-inversion">—</strong>
+              <small>mdp</small>
+            </article>
+            <article class="kpi-card">
+              <span>VaR portafolio</span>
+              <strong id="kpi-var">—</strong>
+              <small>del valor de mercado</small>
+            </article>
+            <article class="kpi-card">
+              <span>Límite de política</span>
+              <strong id="kpi-limite">—</strong>
+              <small>VaR</small>
+            </article>
+          </div>
+
+          <section class="risk-control panel">
+            <div class="panel-head">
+              <div>
+                <span class="panel-index">R01</span>
+                <h3>Control VaR</h3>
+              </div>
+              <span id="var-status" class="status-pill">—</span>
+            </div>
+            <div class="risk-bar">
+              <div class="risk-fill" id="risk-fill"></div>
+              <div class="risk-limit" style="left: 100%"></div>
+            </div>
+            <div class="risk-scale">
+              <span>0%</span>
+              <span id="risk-utilization">—</span>
+              <span>1.20%</span>
+            </div>
+          </section>
+
+          <div class="section-head compact">
+            <div>
+              <div class="section-kicker">PORTAFOLIOS</div>
+              <h2>Comparativo de exposición</h2>
+            </div>
+          </div>
+
+          <div class="portfolio-grid">
+            <article class="portfolio-card panel">
+              <div class="portfolio-title">
+                <div><span class="portfolio-tag">P01</span><h3>Portafolio completo</h3></div>
+                <span class="live-dot">ACTUAL</span>
+              </div>
+              <div class="metric-table" id="complete-table"></div>
+            </article>
+
+            <article class="portfolio-card panel">
+              <div class="portfolio-title">
+                <div><span class="portfolio-tag">P02</span><h3>Portafolio restringido</h3></div>
+                <span class="live-dot">ACTUAL</span>
+              </div>
+              <div class="metric-table" id="restricted-table"></div>
+            </article>
+          </div>
+
+          <div class="chart-grid">
+            <article class="chart-card panel">
+              <div class="panel-head">
+                <div><span class="panel-index">H01</span><h3>Valor de mercado vs. monto invertido</h3></div>
+                <span class="unit-label">mdp</span>
+              </div>
+              <div class="chart-wrap"><canvas id="chart-vm"></canvas></div>
+            </article>
+
+            <article class="chart-card panel">
+              <div class="panel-head">
+                <div><span class="panel-index">H02</span><h3>VaR portafolio vs. límite de política</h3></div>
+                <span class="unit-label">%</span>
+              </div>
+              <div class="chart-wrap"><canvas id="chart-var"></canvas></div>
+            </article>
+          </div>
+        </div>
+
+<div id="view-historico" class="view" hidden>
+
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">HISTÓRICO</div>
+      <h2>Comparativo histórico</h2>
+      <p>Consulta y comparación de dos fechas de la serie histórica. Universo 2012 - 2026</p>
+    </div>
+    <div class="source-badge">Fuente: Coordinación de Riesgos Financieros - VaR Dinámico (SH)</div>
+  </div>
+
+  <!-- SELECTORES DE FECHA -->
+  <section class="history-controls panel">
+
+    <div class="history-date-control">
+      <label for="history-date-a">Primer fecha</label>
+      <input type="date" id="history-date-a">
+    </div>
+
+    <div class="history-date-control">
+      <label for="history-date-b">Segunda fecha</label>
+      <input type="date" id="history-date-b">
+    </div>
+
+    <button id="history-compare-btn" class="history-button">
+      Comparar fechas
+    </button>
+
+    <div id="history-status" class="history-status">
+      Selecciona dos fechas.
+    </div>
+
+  </section>
+
+  <!-- RESUMEN COMPARATIVO -->
+  <section class="panel history-summary">
+
+    <div class="panel-head">
+      <div>
+        <span class="panel-index">C01</span>
+        <h3>Comparativo</h3>
+      </div>
+
+      <span id="history-comparison-date" class="unit-label">—</span>
+    </div>
+
+    <div id="history-comparison-table" class="metric-table">
+      <div class="history-empty">
+        Selecciona dos fechas para generar el comparativo.
+      </div>
+    </div>
+
+  </section>
+
+  <!-- GRÁFICOS EXCLUSIVOS DE HISTÓRICO -->
+  <div class="chart-grid history-chart-grid">
+
+    <article class="chart-card panel">
+      <div class="panel-head">
+        <div>
+          <span class="panel-index">C02</span>
+          <h3>Valor de mercado</h3>
+        </div>
+        <span class="unit-label">mdp</span>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="history-chart-vm"></canvas>
+      </div>
+    </article>
+
+    <article class="chart-card panel">
+      <div class="panel-head">
+        <div>
+          <span class="panel-index">C03</span>
+          <h3>VaR portafolio vs. límite</h3>
+        </div>
+        <span class="unit-label">%</span>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="history-chart-var"></canvas>
+      </div>
+    </article>
+
+  </div>
+
+</div>
+
+<!-- =========================================================
+     03 PORTAFOLIOS
+     ========================================================= -->
+
+<div id="view-portafolios" class="view" hidden>
+
+  <div class="section-head">
+
+    <div>
+
+      <div class="section-kicker">
+        PORTAFOLIOS
+      </div>
+
+      <h2>
+        Administración de portafolios
+      </h2>
+
+      <p>
+        Valor de mercado, valor en riesgo y volatilidad
+        de los portafolios administrados.
+      </p>
+
+    </div>
+
+    <div class="source-badge">
+      Fuente: VaR Dinámico (Simulación Histórica)
+    </div>
+
+  </div>
+
+
+  <!-- =======================================================
+       RESUMEN DE LOS CUATRO PORTAFOLIOS
+       ======================================================= -->
+
+  <section class="portfolio-summary-grid">
+
+
+    <!-- ALFA -->
+
+    <article class="panel portfolio-card">
+
+      <div class="portfolio-card-head">
+
+        <div>
+          <span class="panel-index">P01</span>
+          <span class="portfolio-name">ALFA</span>
+        </div>
+
+        <span class="portfolio-code">
+          ALFA
+        </span>
+
+      </div>
+
+      <div
+        class="portfolio-main-value"
+        id="portfolio-alfa-vm"
+      >
+        —
+      </div>
+
+      <div class="portfolio-unit">
+        VALOR DE MERCADO · MDP
+      </div>
+
+      <div class="portfolio-metrics">
+
+        <div>
+          <span>VALOR EN RIESGO</span>
+          <strong id="portfolio-alfa-var">—</strong>
+        </div>
+
+        <div>
+          <span>VOLATILIDAD</span>
+          <strong id="portfolio-alfa-vol">—</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- CALCE -->
+
+    <article class="panel portfolio-card">
+
+      <div class="portfolio-card-head">
+
+        <div>
+          <span class="panel-index">P02</span>
+          <span class="portfolio-name">CALCE</span>
+        </div>
+
+        <span class="portfolio-code">
+          CALCE
+        </span>
+
+      </div>
+
+      <div
+        class="portfolio-main-value"
+        id="portfolio-calce-vm"
+      >
+        —
+      </div>
+
+      <div class="portfolio-unit">
+        VALOR DE MERCADO · MDP
+      </div>
+
+      <div class="portfolio-metrics">
+
+        <div>
+          <span>VALOR EN RIESGO</span>
+          <strong id="portfolio-calce-var">—</strong>
+        </div>
+
+        <div>
+          <span>VOLATILIDAD</span>
+          <strong id="portfolio-calce-vol">—</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- LIQUIDEZ -->
+
+    <article class="panel portfolio-card">
+
+      <div class="portfolio-card-head">
+
+        <div>
+          <span class="panel-index">P03</span>
+          <span class="portfolio-name">LIQUIDEZ</span>
+        </div>
+
+        <span class="portfolio-code">
+          LIQUIDEZ
+        </span>
+
+      </div>
+
+      <div
+        class="portfolio-main-value"
+        id="portfolio-liquidez-vm"
+      >
+        —
+      </div>
+
+      <div class="portfolio-unit">
+        VALOR DE MERCADO · MDP
+      </div>
+
+      <div class="portfolio-metrics">
+
+        <div>
+          <span>VALOR EN RIESGO</span>
+          <strong id="portfolio-liquidez-var">—</strong>
+        </div>
+
+        <div>
+          <span>VOLATILIDAD</span>
+          <strong id="portfolio-liquidez-vol">—</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- OPERATIVO -->
+
+    <article class="panel portfolio-card">
+
+      <div class="portfolio-card-head">
+
+        <div>
+          <span class="panel-index">P04</span>
+          <span class="portfolio-name">OPERATIVO</span>
+        </div>
+
+        <span class="portfolio-code">
+          OPERATIVO
+        </span>
+
+      </div>
+
+      <div
+        class="portfolio-main-value"
+        id="portfolio-operativo-vm"
+      >
+        —
+      </div>
+
+      <div class="portfolio-unit">
+        VALOR DE MERCADO · MDP
+      </div>
+
+      <div class="portfolio-metrics">
+
+        <div>
+          <span>VALOR EN RIESGO</span>
+          <strong id="portfolio-operativo-var">—</strong>
+        </div>
+
+        <div>
+          <span>VOLATILIDAD</span>
+          <strong id="portfolio-operativo-vol">—</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </section>
+
+
+  <!-- =======================================================
+       TABLA
+       ======================================================= -->
+
+  <section class="panel portfolio-table-panel">
+
+    <div class="panel-head">
+
+      <div>
+
+        <span class="panel-index">
+          P05
+        </span>
+
+        <h3>
+          Administración de portafolios
+        </h3>
+
+      </div>
+
+      <span
+        id="portfolio-date"
+        class="unit-label"
+      >
+        —
+      </span>
+
+    </div>
+
+    <div
+      id="portfolio-table"
+      class="portfolio-table"
+    >
+
+      <div class="portfolio-empty">
+        Cargando información de G00...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       GRÁFICO COMPARATIVO
+       ======================================================= -->
+
+  <section class="panel portfolio-chart-panel">
+
+    <div class="panel-head">
+
+      <div>
+
+        <span class="panel-index">
+          P06
+        </span>
+
+        <h3>
+          VaR comparativo
+        </h3>
+
+      </div>
+
+      <span class="unit-label">
+        %
+      </span>
+
+    </div>
+
+    <div class="chart-wrap portfolio-chart-wrap">
+
+      <canvas id="portfolio-var-chart"></canvas>
+
+    </div>
+
+  </section>
+
+</div>
+
+<div id="view-riesgo" class="view" hidden>
+
+  <!-- =====================================================
+       07 · BASES DE DATOS
+       ===================================================== -->
+
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">BASES DE DATOS</div>
+      <h2>Cortes históricos y datos disponibles descargables (2010 - 2026)</h2>
+      <p>Tasas nominales [Bonos M (Yields)] y tasas reales [Real Bruta (Yields)]</p>
+    </div>
+    <div class="source-badge">Proveedor de precios: Valmer - Grupo BMV</div>
+  </div>
+
+  <!-- =====================================================
+       T01 · ÚLTIMO CORTE
+       ===================================================== -->
+
+<section class="panel tasas-panel">
+
+  <div class="panel-header">
+
+    <div>
+      <span class="panel-index">T01</span>
+
+      <h3 class="panel-title">
+        Último corte
+      </h3>
+
+<p class="panel-subtitle">
+  Descarga de tasas del corte corriente
+</p>
+
+<span
+  id="tasas-actual-periodo"
+  class="tasas-current-period"
+>
+  Cargando corte...
+</span>
+    </div>
+
+    <span class="panel-status">
+      —
+    </span>
+
+  </div>
+
+
+  <div class="tasas-download">
+
+    <a
+      id="tasas-download-actual-nominal"
+      class="button button-primary"
+      href="#"
+      download
+    >
+      Descargar Bonos M (Yields)
+    </a>
+
+
+    <a
+      id="tasas-download-actual-real"
+      class="button"
+      href="#"
+      download
+    >
+      Descargar Real Bruta (Yields)
+    </a>
+
+  </div>
+
+</section>
+
+  <!-- =====================================================
+       T02 · CONSULTA Y DESCARGA
+       ===================================================== -->
+
+<section class="panel tasas-panel">
+
+  <button
+    id="tasas-historico-toggle"
+    class="panel-header tasas-panel-toggle"
+    type="button"
+    aria-expanded="false"
+  >
+
+    <div>
+
+      <span class="panel-index">T02</span>
+
+      <h3 class="panel-title">
+        Consulta y descarga
+      </h3>
+
+      <p class="panel-subtitle">
+        Selecciona el corte mensual disponible
+      </p>
+
+    </div>
+
+    <span
+      id="tasas-historico-arrow"
+      class="tasas-history-arrow"
+    >
+      ▾
+    </span>
+
+  </button>
+
+
+  <div
+    id="tasas-historico-content"
+    class="tasas-historico-content"
+    hidden
+  >
+
+    <div class="tasas-download">
+
+      <div class="tasas-field">
+
+        <label for="tasas-year-select">
+          Año
+        </label>
+
+        <select
+          id="tasas-year-select"
+          class="tasas-select"
+        >
+
+          <option value="">
+            Cargando años...
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="tasas-field">
+
+        <label for="tasas-corte-select">
+          Corte
+        </label>
+
+        <select
+          id="tasas-corte-select"
+          class="tasas-select"
+          disabled
+        >
+
+          <option value="">
+            Selecciona un año
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="tasas-download-actions">
+
+        <a
+          id="tasas-download-nominal"
+          class="button button-primary"
+          href="#"
+          download
+        >
+          Descargar Bonos M
+        </a>
+
+        <a
+          id="tasas-download-real"
+          class="button"
+          href="#"
+          download
+        >
+          Descargar Real Bruta
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     T03 · HISTÓRICO
+     ===================================================== -->
+
+<section class="panel tasas-panel">
+
+  <div class="panel-header">
+
+    <div>
+      <span class="panel-index">T03</span>
+
+      <h3 class="panel-title">
+        Histórico de tasas
+      </h3>
+
+      <p class="panel-subtitle">
+        Evolución mensual de la tasa nominal y real
+      </p>
+
+      <span
+        id="tasas-chart-periodo"
+        class="tasas-current-period"
+      >
+        Cargando corte...
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div class="chart-wrap tasas-chart-wrap">
+
+    <canvas
+      id="tasas-history-chart"
+    ></canvas>
+
+  </div>
+
+<div class="tasas-history-longterm">
+
+  <div class="tasas-history-longterm-header">
+
+    <h4 class="tasas-history-longterm-title">
+  Evolución histórica de tasas
+</h4>
+
+<p class="tasas-history-longterm-subtitle">
+  Últimos seis años de información
+</p>
+
+  </div>
+
+  <div class="chart-wrap tasas-chart-wrap">
+    <canvas
+      id="tasas-longterm-chart"
+    ></canvas>
+  </div>
+
+</div>
+
+
+
+  
+</section>
+
+<!-- =====================================================
+     FIN 07 · BASES DE DATOS
+     ===================================================== -->
+
+</div>
+        
+<!-- ===== aqui quité un maldito </div> ========================================== -->
+        
+<div id="view-mandatarios" class="view" hidden>
+
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">MANDATARIOS</div>
+      <h2>Seguimiento de mandatos</h2>
+      <p>
+        Inversiones de renta variable y fondos del Instituto.
+      </p>
+    </div>
+
+    <div class="source-badge">
+      Fuente: Coordinación de Riesgos Financieros
+    </div>
+  </div>
+
+
+  <!-- =====================================================
+       CONTROL DE HISTÓRICOS
+       ===================================================== -->
+
+  <div class="mandatarios-display-control">
+
+    <button
+      id="mandatarios-history-cards-toggle"
+      class="mandatarios-display-button"
+      type="button"
+      aria-expanded="false"
+    >
+      <span id="mandatarios-history-cards-label">
+        Mostrar información de mandatarios liquidados
+      </span>
+    </button>
+
+  </div>
+
+
+  <!-- =====================================================
+       RESUMEN DE MANDATARIOS
+       ===================================================== -->
+
+  <section class="mandatarios-summary-grid">
+
+
+    <!-- BNP -->
+    <article class="mandatario-card panel mandatario-current">
+
+      <div class="mandatario-card-head">
+
+        <div>
+          <span class="panel-index">M01</span>
+          <h3>BNP</h3>
+        </div>
+
+        <span class="mandatario-status current">
+          VIGENTE
+        </span>
+
+      </div>
+
+      <div class="mandatario-metrics">
+
+        <div class="mandatario-metric">
+          <span>Valor de mercado</span>
+          <strong id="mandatario-bnp-vm">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>Monto invertido</span>
+          <strong id="mandatario-bnp-inversion">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>VaR</span>
+          <strong id="mandatario-bnp-var">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>Volatilidad</span>
+          <strong id="mandatario-bnp-vol">—</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- BANORTE -->
+    <article
+      class="mandatario-card panel mandatario-historical mandatario-optional"
+      hidden
+    >
+
+      <div class="mandatario-card-head">
+
+        <div>
+          <span class="panel-index">M02</span>
+          <h3>BANORTE</h3>
+        </div>
+        <div id="mandatario-ban-fecha" class="mandatario-fecha"> Fecha liquidación: </div>
+        <span class="mandatario-status historical">
+          LIQUIDADO
+        </span>
+
+      </div>
+
+      <div class="mandatario-metrics">
+
+        <div class="mandatario-metric">
+          <span>Valor de mercado</span>
+          <strong id="mandatario-ban-vm">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>Monto invertido</span>
+          <strong id="mandatario-ban-inversion">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>VaR</span>
+          <strong id="mandatario-ban-var">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>Volatilidad</span>
+          <strong id="mandatario-ban-vol">—</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- GBM -->
+    <article
+      class="mandatario-card panel mandatario-historical mandatario-optional"
+      hidden
+    >
+
+      <div class="mandatario-card-head">
+
+        <div>
+          <span class="panel-index">M03</span>
+          <h3>GBM</h3>
+        </div>
+        <div id="mandatario-gbm-fecha" class="mandatario-fecha"> Fecha liquidación: </div>
+        <span class="mandatario-status historical">
+          LIQUIDADO
+        </span>
+
+      </div>
+
+      <div class="mandatario-metrics">
+
+        <div class="mandatario-metric">
+          <span>Valor de mercado</span>
+          <strong id="mandatario-gbm-vm">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>Monto invertido</span>
+          <strong id="mandatario-gbm-inversion">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>VaR</span>
+          <strong id="mandatario-gbm-var">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>Volatilidad</span>
+          <strong id="mandatario-gbm-vol">—</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- ESCALA -->
+    <article class="mandatario-card panel mandatario-fund">
+
+      <div class="mandatario-card-head">
+
+        <div>
+          <span class="panel-index">M04</span>
+          <h3>ESCALA</h3>
+        </div>
+
+        <span class="mandatario-status fund">
+          FONDO
+        </span>
+
+      </div>
+
+      <div class="mandatario-metrics">
+
+        <div class="mandatario-metric">
+          <span>Valor de mercado</span>
+          <strong id="mandatario-escala-vm">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>Monto invertido</span>
+          <strong id="mandatario-escala-inversion">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>VaR</span>
+          <strong id="mandatario-escala-var">—</strong>
+        </div>
+
+        <div class="mandatario-metric">
+          <span>Volatilidad</span>
+          <strong id="mandatario-escala-vol">—</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </section>
+
+
+  <!-- =====================================================
+       GRÁFICO BNP
+       ===================================================== -->
+
+  <section class="panel mandatario-chart-panel">
+
+    <div class="panel-head">
+
+      <div>
+        <span class="panel-index">M05</span>
+        <h3>Valor en Riesgo (BNP) Benchmarks </h3>
+      </div>
+
+      <span class="unit-label">
+        %
+      </span>
+
+    </div>
+
+    <div class="mandatario-chart-meta">
+      <span>Histórico · 251 días</span>
+      <span>Simulación histórica - Paramétrico-Dinámico 99% </span>
+    </div>
+
+    <div class="chart-wrap mandatario-chart-wrap">
+      <canvas id="mandatario-bnp-chart"></canvas>
+    </div>
+
+  </section>
+  <section class="panel mandatario-history-panel">
+
+    <button
+      id="mandatario-history-toggle"
+      class="mandatario-history-toggle"
+      type="button"
+      aria-expanded="false"
+    >
+
+      <div>
+
+        <span class="panel-index">M06</span>
+
+        <div class="mandatario-history-title">
+          Valor en Riesgo (GBM - BANORTE) Benchmarks
+        </div>
+
+        <div class="mandatario-history-subtitle">
+          GBM · BAN · Benchmark (USD)
+        </div>
+
+      </div>
+
+      <span
+        id="mandatario-history-arrow"
+        class="mandatario-history-arrow"
+      >
+        ▾
+      </span>
+
+    </button>
+
+
+    <div
+      id="mandatario-history-content"
+      class="mandatario-history-content"
+      hidden
+    >
+
+      <div class="mandatario-history-note">
+
+        <span>GBM</span>
+        <strong>Último rendimiento calculado: 15/09/2026</strong>
+
+      </div>
+
+      <div class="mandatario-history-note">
+
+        <span>BANORTE</span>
+        <strong>Último rendimiento calculado: 09/06/2026</strong>
+
+      </div>
+
+      <div class="chart-wrap mandatario-history-chart-wrap">
+        <canvas id="mandatario-history-chart"></canvas>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+        <div id="error-box" class="error-box" hidden></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

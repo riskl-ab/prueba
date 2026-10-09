@@ -1,0 +1,15 @@
+RISKLAB · LOGIN DE DEMOSTRACIÓN
+
+Cuentas de prueba:
+
+1) Usuario: analista
+   Contraseña: RiskLab2026!
+
+2) Usuario: consulta
+   Contraseña: RiesgoDemo26!
+
+3) Usuario: administrador
+   Contraseña: MonitorDemo26!
+
+IMPORTANTE
+Este login es un prototipo visual. Las credenciales están en js/login-demo.js y pueden inspeccionarse desde el navegador. No constituye control de acceso real ni protege los archivos estáticos publicados, la API ni los CSV/JSON. No usar contraseñas reales ni desplegarlo como medida de seguridad para información restringida.
